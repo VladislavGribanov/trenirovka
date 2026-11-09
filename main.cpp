@@ -3,4 +3,5 @@ int main()
 {
 std::cout <<"norm";
 std::cout<<"Politex";
+return 0;
 }
