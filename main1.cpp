@@ -67,7 +67,6 @@ int main() { // Начало главной функции программы
         while (const std::optional event = window.pollEvent()) { // Получение и обработка событий окна
             if (event->is<sf::Event::Closed>()) // Проверка события закрытия окна
                 window.close(); // Закрытие графического окна
-
             if (const auto* key = event->getIf<sf::Event::KeyPressed>()) { // Проверка события нажатия клавиши
                 if (key->code == sf::Keyboard::Key::Enter) // Проверка нажатия клавиши Enter
                     result = true; // Переключение на итоговое изображение
@@ -78,9 +77,9 @@ int main() { // Начало главной функции программы
             for (int i = 0; i < n; i++) { // Перебор всех первоначальных окружностей
                 sf::CircleShape circle(r); // Создание окружности заданного радиуса
                 circle.setPosition(sf::Vector2f(X[i] - r, Y[i] - r)); // Установка положения окружности с учётом радиуса
-                circle.setFillColor(sf::Color::Cyan); // Установка цвета заливки окружности
+                circle.setFillColor(sf::Color::Transparent); // Установка прозрачной заливки окружности
                 circle.setOutlineThickness(1); // Установка толщины границы окружности
-                circle.setOutlineColor(sf::Color::Blue); // Установка цвета границы окружности
+                circle.setOutlineColor(sf::Color::White); // Установка цвета границы окружности
                 window.draw(circle); // Отображение окружности в графическом окне
             }
         }
@@ -88,19 +87,28 @@ int main() { // Начало главной функции программы
             for (int i = 0; i < count; i++) { // Перебор непересекающихся окружностей
                 for (int j = i + 1; j < count; j++) { // Выбор следующей окружности для соединения
                     sf::Vertex line[2]; // Создание массива из двух вершин для линии
-                    line[0].position = sf::Vector2f(newX[i], newY[i]); // Задание координат начала линии
-                    line[1].position = sf::Vector2f(newX[j], newY[j]); // Задание координат конца линии
+                    float x = newX[j] - newX[i]; // Вычисление разности координат X центров окружностей
+                    float y = newY[j] - newY[i]; // Вычисление разности координат Y центров окружностей
+                    float d = sqrt(x * x + y * y); // Вычисление расстояния между центрами окружностей
+                    line[0].position = sf::Vector2f( // Задание координат начала линии на границе первой окружности
+                        newX[i] + r * x / d, // Вычисление координаты X начала линии
+                        newY[i] + r * y / d // Вычисление координаты Y начала линии
+                    );
+                    line[1].position = sf::Vector2f( // Задание координат конца линии на границе второй окружности
+                        newX[j] - r * x / d, // Вычисление координаты X конца линии
+                        newY[j] - r * y / d // Вычисление координаты Y конца линии
+                    );
                     line[0].color = sf::Color::Red; // Установка красного цвета первой вершины
                     line[1].color = sf::Color::Red; // Установка красного цвета второй вершины
-                    window.draw(line, 2, sf::PrimitiveType::Lines); // Отрисовка линии между центрами окружностей
+                    window.draw(line, 2, sf::PrimitiveType::Lines); // Отрисовка линии между окружностями
                 }
             }
             for (int i = 0; i < count; i++) { // Перебор всех непересекающихся окружностей
                 sf::CircleShape circle(r); // Создание окружности заданного радиуса
                 circle.setPosition(sf::Vector2f(newX[i] - r, newY[i] - r)); // Установка положения окружности
-                circle.setFillColor(sf::Color::Cyan); // Установка цвета заливки окружности
+                circle.setFillColor(sf::Color::Black); // Установка чёрной заливки окружности
                 circle.setOutlineThickness(1); // Установка толщины границы окружности
-                circle.setOutlineColor(sf::Color::Blue); // Установка цвета границы окружности
+                circle.setOutlineColor(sf::Color::White); // Установка цвета границы окружности
                 window.draw(circle); // Отображение непересекающейся окружности
             }
         }
